@@ -27,7 +27,7 @@ jobs:
       - name: Check formatting
         uses: jidicula/clang-format-action@v4.18.0
         with:
-          clang-format-version: '13'
+          clang-format-version: '22'
           check-path: ${{ matrix.path }}
 
   build-and-test:
