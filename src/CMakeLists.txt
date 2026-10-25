@@ -6,7 +6,7 @@ set(SOURCES
 
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/)
 
-qt_add_executable(${PROJECT_NAME} ${SOURCES})
+qt_add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
@@ -14,3 +14,8 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+
+install(TARGETS ${PROJECT_NAME}
+  BUNDLE DESTINATION .
+  RUNTIME DESTINATION bin
+)
