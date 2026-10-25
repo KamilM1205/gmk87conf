@@ -34,4 +34,66 @@ jobs:
         run: cmake --build build --parallel 2
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
-        
+  
+  release:
+    name: Create release
+    needs: build-and-test
+    if: github.event_name == `push` && github.ref == `refs/heads/main`
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect version change
+        id: version
+        shell: bash
+        run: |
+          CURRENT_VERSION="$(tr -d '[:space:]' < VERSION)"
+
+          if ! [[ "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([\-][a-zA-Z]+)?$ ]]; then
+            echo "Invalid VERSION: $CURRENT_VERSION"
+            exit 1
+          fi
+
+          PREVIOUS_VERSION="$(git show "${GITHUB_SHA}^:VERSION" 2>/dev/null || true)"
+          PREVIOUS_VERSION="$(printf '%s' "$PREVIOUS_VERSION" | tr -d '[:space:]')"
+
+          echo "current=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "previous=$PREVIOUS_VERSION" >> "$GITHUB_OUTPUT"
+
+          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Git tag
+        if: steps.version.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.current }}
+        run: |
+          TAG="v${VERSION}"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null 2>&1; then
+            echo "Tag $TAG already exists"
+            exit 1
+          fi
+
+          git tag "$TAG" "$GITHUB_SHA"
+          git push origin "$TAG"
+
+      - name: Create GitHub release
+        if: steps.version.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.current }}
+        run: |
+          gh release create "v${VERSION}" \
+            --title "v${VERSION}" \
+            --generate-notes
