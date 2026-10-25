@@ -7,8 +7,8 @@ Launcher::Launcher(std::int32_t argc, char **argv) {
 }
 
 auto Launcher::run() -> std::int32_t {
-  MainWindow window;
-  window.show();
+  		MainWindow window;
+  		window.show();
 
   return app->exec();
 }
