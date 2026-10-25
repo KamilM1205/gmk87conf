@@ -1,0 +1,209 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: Windows-x64
+            archive: zip
+
+          - os: ubuntu-24.04
+            platform: Linux-x64
+            archive: tar.gz
+
+          - os: macos-latest
+            platform: macOS-arm64
+            archive: zip
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Install QT
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.10.3'
+          cache: true
+
+      - name: Configure CMake
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DGMK_USE_TESTS=OFF
+
+      - name: Build project
+        run: cmake --build build --parallel 2
+
+      - name: Deploy MacOS
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          VERSION: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          APP_PATH="$(find build -type d -name 'GMK87Configurator.app' -print -quit)"
+
+          if [[ -z "$APP_PATH" ]]; then
+            echo "App not found."
+            exit 1
+          fi
+
+          MACDEPLOYQT="$(find "$QT_ROOT_DIR" -type f -name macdeployqt -print -quit)"
+
+          if [[ -z "$MACDEPLOYQT" ]]; then
+            echo "macdeployqt not found."
+            exit 1
+          fi
+
+          "$MACDEPLOYQT" "$APP_PATH"
+
+          STAGE_DIR=$(mktemp -d)
+          trap 'rm -rf "$STAGE_DIR"' EXIT
+
+          ditto "$APP_PATH" "$STAGE_DIR/$(basename "$APP_PATH")"
+          ln -s /Applications "$STAGE_DIR/Applications"
+
+          mkdir -p artifacts
+          hdiutil create \
+          -volname "GMK87Configurator-$VERSION-MacOS" \
+          -srcfolder "$STAGE_DIR" \
+          -ov \
+          -format UDZO \
+          artifacts/GMK87Configurator-$VERSION-MacOS
+
+      - name: Deploy Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          VERSION: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          EXE="$(find build -type f -executable -name 'GMK87Configurator' -print -quit)"
+
+          if [[ -z "$EXE" ]]; then
+            echo "App not found."
+            exit 1
+          fi
+
+          mkdir -p AppDir/usr/bin
+
+          cp "$EXE" AppDir/usr/bin/GMK87Configurator
+
+          mkdir -p artifacts
+
+          cat > AppDir/GMK87Configurator.desktop <<'EOF'
+
+          [Desktop Entry]
+          Type=Application
+          Name=GMK87Configurator
+          Exec=GMK87Configurator
+          Icon=GMK87ConfIcon
+          Categories=Utility;
+          EOF
+
+          cp resources/icons/Icon.svg AppDir/GMK87ConfIcon.svg
+
+          wget -q \
+            https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage \
+            -O linuxdeploy.AppImage
+          wget -q \
+            https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage \
+            -O linuxdeploy-plugin-qt.AppImage
+          chmod +x linuxdeploy.AppImage linuxdeploy-plugin-qt.AppImage
+
+          export QMAKE="$(find "$QT_ROOT_DIR" -type f -name qmake -print -quit)"
+          export EXTRA_QT_PLUGINS="platforms"
+
+          if [[ -z "$QMAKE" ]]; then
+            echo "qmake not found under QT_ROOT_DIR=$QT_ROOT_DIR"
+            exit 1
+          fi
+
+          export APPIMAGE_EXTRACT_AND_RUN=1
+          ./linuxdeploy.AppImage \
+            --appdir AppDir \
+            --plugin qt \
+            --output appimage
+
+          APPIMAGE="$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
+          if [[ -z "$APPIMAGE" ]]; then
+            echo "AppImage was not created."
+            exit 1
+          fi
+          mv "$APPIMAGE" artifacts/GMK87Configurator-$VERSION-linux-x86_64.AppImage
+
+      - name: Deploy Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          VERSION: ${{ inputs.tag }}
+        run: |
+          $exe = Get-ChildItem -Path build -Filter GMK87Configurator.exe -Recurse |
+            Select-Object -First 1
+
+          if (-not $exe) {
+            throw "App not found"
+          }
+
+          $windeployqt = Get-ChildItem -Path $env:QT_ROOT_DIR `
+            -Filter windeployqt.exe -Recurse |
+            Select-Object -First 1
+
+            if (-not $windeployqt) {
+              throw "windeployqt.exe not found"
+            }
+          & $windeployqt.FullName $exe.FullName
+
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+
+          Compress-Archive -Path "$($exe.DirectoryName)\*" `
+           -DestinationPath "artifacts/GMK87Configurator-$VERSION-windows-x86_64.zip"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: GMK87Configurator-${{ inputs.tag }}-release-${{ matrix.platform }}
+          path: artifacts/*
+          if-no-files-found: error
+  
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release upload "$TAG" artifacts/* --repo "$GITHUB_REPOSITORY"
+
