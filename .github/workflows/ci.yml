@@ -13,8 +13,26 @@ permissions:
   contents: read
 
 jobs:
+  check-format:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - 'src'
+          - 'tests'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Check formatting
+        uses: jidicula/clang-format-action@v4.18.0
+        with:
+          clang-format-version: '22'
+          check-path: ${{ matrix.path }}
+
   build-and-test:
     name: Build and test
+    needs: check-format
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
