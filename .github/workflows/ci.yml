@@ -120,7 +120,7 @@ jobs:
       - name: Trigger release workflow
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v${{ env.VERSION }}
+          TAG: v${{ steps.version.outputs.current }}
         run: |
           gh workflow run release.yml \
             --ref main \
