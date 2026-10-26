@@ -89,7 +89,7 @@ jobs:
           -srcfolder "$STAGE_DIR" \
           -ov \
           -format UDZO \
-          artifacts/
+          artifacts/GMK87Configurator-$VERSION-MacOS
 
       - name: Deploy Linux
         if: runner.os == 'Linux'
