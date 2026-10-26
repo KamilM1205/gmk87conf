@@ -206,5 +206,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          gh release upload "$TAG" artifacts/*
+          gh release upload "$TAG" artifacts/* --repo "$GITHUB_REPOSITORY"
 
