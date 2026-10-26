@@ -198,8 +198,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v8
         with:
-          pattern: release-*
-          path: dist
+          path: artifacts
           merge-multiple: true
 
       - name: Publish Release
