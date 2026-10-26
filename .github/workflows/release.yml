@@ -50,6 +50,9 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release
           -DGMK_USE_TESTS=OFF
 
+      - name: Build project
+        run: cmake --build build --parallel 2
+
       - name: Deploy MacOS
         if: runner.os == 'macOS'
         shell: bash
@@ -154,7 +157,7 @@ jobs:
           VERSION: ${{ github.ref_name }}
         run: |
           $exe = Get-ChildItem -Path build -Filter GMK87Configurator.exe -Recurse |
-            Select-Object - First 1
+            Select-Object -First 1
 
           if (-not $exe) {
             throw "App not found"
