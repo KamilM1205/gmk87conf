@@ -118,8 +118,11 @@ jobs:
           Type=Application
           Name=GMK87Configurator
           Exec=GMK87Configurator
+          Icon=GMK87ConfIcon
           Categories=Utility;
           EOF
+
+          cp resources/icons/Icon.svg AppDir/GMK87ConfIcon.svg
 
           wget -q \
             https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage \
