@@ -56,7 +56,7 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ inputs.tag }}
         run: |
           set -euo pipefail
 
@@ -94,7 +94,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ inputs.tag }}
         run: |
           set -euo pipefail
 
@@ -156,7 +156,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ inputs.tag }}
         run: |
           $exe = Get-ChildItem -Path build -Filter GMK87Configurator.exe -Recurse |
             Select-Object -First 1
@@ -182,7 +182,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
         with:
-          name: GMK87Configurator-${{ github.ref_name }}-release-${{ matrix.platform }}
+          name: GMK87Configurator-${{ inputs.tag }}-release-${{ matrix.platform }}
           path: artifacts/*
           if-no-files-found: error
   
@@ -203,7 +203,7 @@ jobs:
       - name: Publish Release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.tag }}
         run: |
           gh release upload "$TAG" artifacts/* --repo "$GITHUB_REPOSITORY"
 
