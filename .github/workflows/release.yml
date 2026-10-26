@@ -178,7 +178,7 @@ jobs:
            -DestinationPath artifacts/GMK87Configurator-$($VERSION)-windows.zip
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.artifact_name }}
           path: artifacts/*
@@ -193,7 +193,7 @@ jobs:
 
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: release-*
           path: dist
