@@ -115,3 +115,12 @@ jobs:
           gh release create "v${VERSION}" \
             --title "v${VERSION}" \
             --generate-notes
+
+      - name: Trigger release workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ env.VERSION }}
+        run: |
+          gh workflow run release.yml \
+            --ref main \
+            -f tag="$TAG"
