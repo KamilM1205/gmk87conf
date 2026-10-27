@@ -177,7 +177,7 @@ jobs:
           New-Item -ItemType Directory -Force artifacts | Out-Null
 
           Compress-Archive -Path "$($exe.DirectoryName)\*" `
-           -DestinationPath "artifacts/GMK87Configurator-$VERSION-windows-x86_64.zip"
+          -DestinationPath "artifacts/GMK87Configurator-$env:VERSION-windows-x86_64.zip"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
