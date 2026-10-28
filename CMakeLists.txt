@@ -26,6 +26,14 @@ endif()
 
 message(STATUS "GMK_USE_TESTS: ${GMK_USE_TESTS}")
 
+FetchContent_Declare(
+    hidapi
+    GIT_REPOSITORY https://github.com/libusb/hidapi.git
+    GIT_TAG hidapi-0.15.0
+)
+
+FetchContent_MakeAvailable(hidapi)
+
 add_subdirectory(src)
 
 if (GMK_USE_TESTS)
