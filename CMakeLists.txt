@@ -26,6 +26,9 @@ endif()
 
 message(STATUS "GMK_USE_TESTS: ${GMK_USE_TESTS}")
 
+include(FetchContent)
+set(FETCHCONTENT_QUIET OFF)
+
 FetchContent_Declare(
     hidapi
     GIT_REPOSITORY https://github.com/libusb/hidapi.git
