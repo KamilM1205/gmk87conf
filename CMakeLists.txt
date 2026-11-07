@@ -14,7 +14,7 @@ include(version)
 get_version("${CMAKE_CURRENT_LIST_DIR}/VERSION" PROJECT_VERSION)
 message(STATUS "${PROJECT_NAME} Version: ${PROJECT_VERSION}")
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Svg Xml)
 
 qt_standard_project_setup()
 
