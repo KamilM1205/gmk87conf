@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>styles/styles.qss</file>
+
+        <file>icons/close.svg</file>
+        <file>icons/maximize.svg</file>
+        <file>icons/minimize.svg</file>
+
+        <file>icons/rectangle.svg</file>
+    </qresource>
+</RCC>
