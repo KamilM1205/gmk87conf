@@ -1,15 +1,17 @@
 #ifndef UI_COLORED_ICON_HPP
 #define UI_COLORED_ICON_HPP
 
+#include <QtCore/qhashfunctions.h>
 #include <QtCore/qsize.h>
 #include <QtGui/qicon.h>
 #include <QtXml/qdom.h>
 
 namespace UI {
-class ColoredIcon {
+class ColoredIcon final {
   friend class ColoredIconTest;
 
 private:
+  static std::shared_ptr<QIcon> default_icon;
   static void updateXmlTagColor(QDomDocument doc, const QString &tag_name,
                                 const QString &color);
 
@@ -19,6 +21,7 @@ private:
 public:
   ColoredIcon() = delete;
 
+  static QIcon DefaultIcon();
   static QIcon CreateIcon(const QString &path, QString const &color,
                           const QSize &size);
 };
