@@ -4,9 +4,11 @@
 #include <QApplication>
 #include <cstdint>
 
-class Launcher {
+class Launcher final {
 private:
   std::unique_ptr<QApplication> app;
+
+  void loadStyle();
 
 public:
   Launcher() = delete;

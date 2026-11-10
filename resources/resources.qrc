@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>styles/styles.qss</file>
+
+        <file>icons/close.svg</file>
+        <file>icons/maximize.svg</file>
+        <file>icons/minimize.svg</file>
+        <file>icons/rectangle.svg</file>
+
+        <file>fonts/Redaction-Bold.ttf</file>
+        <file>fonts/Redaction-Italic.ttf</file>
+        <file>fonts/Redaction-Regular.ttf</file>
+    </qresource>
+</RCC>
