@@ -1,5 +1,5 @@
-QWidget {
-    background-color: #080808;
+UI--RoundedWindow {
+    background-color: #080808; 
 }
 
 QLabel#titlebarTitle {

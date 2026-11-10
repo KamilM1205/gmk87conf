@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include "ui/widgets/rounded_window.hpp"
 #include "ui/widgets/titlebar.hpp"
 #include <QMainWindow>
 
-class MainWindow : public QMainWindow {
+class MainWindow : public UI::RoundedWindow {
   Q_OBJECT
 
 private:

@@ -2,6 +2,7 @@ set(SOURCES
   core/launcher.cpp
   ui/mainwindow.cpp
   ui/widgets/titlebar.cpp
+  ui/widgets/rounded_window.cpp
   ui/widgets/buttons/icon_button.cpp
   ui/utils/colored_icon.cpp
   utils/qrc_output.cpp

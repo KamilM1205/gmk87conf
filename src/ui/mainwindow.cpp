@@ -1,11 +1,11 @@
 #include "mainwindow.hpp"
+#include "ui/widgets/rounded_window.hpp"
 #include "ui/widgets/titlebar.hpp"
 #include <QtCore/qnamespace.h>
 #include <QtWidgets/qboxlayout.h>
 #include <QtWidgets/qwidget.h>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-  setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+MainWindow::MainWindow(QWidget *parent) : UI::RoundedWindow(parent) {
   setMinimumSize(800, 600);
 
   auto *central = new QWidget(this);
