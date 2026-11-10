@@ -3,6 +3,7 @@
 #include <QtCore/qlogging.h>
 #include <QtCore/qtresource.h>
 #include <iostream>
+
 int main(int argc, char *argv[]) {
   Q_INIT_RESOURCE(resources);
 
