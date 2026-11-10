@@ -43,7 +43,6 @@ private:
 
   // Mouse
   QPoint m_start_position;
-  QPoint m_local_mouse_position;
   bool is_drag = false;
 
   bool m_is_left_hand;
