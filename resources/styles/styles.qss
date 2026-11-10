@@ -1,0 +1,32 @@
+QWidget {
+    background-color: #080808;
+}
+
+QLabel#titlebarTitle {
+  color: #F0F0F5;
+  font-family: "Redaction";
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+UI--IconButton#titlebarCloseBtn {
+  background-color: #080808;
+  qproperty-iconColor: #F5F5F5;
+  qproperty-iconColorHover: #F5F5F5;
+  qproperty-iconColorClicked: #F5F5F5;
+}
+
+UI--IconButton#titlebarCloseBtn:hover {
+    background-color: #E53935;
+}
+
+UI--IconButton {
+  background-color: #080808;
+  qproperty-iconColor: #F5F5F5;
+  qproperty-iconColorHover: #080808;
+  qproperty-iconColorClicked: #080808;
+}
+
+UI--IconButton:hover {
+    background-color: #F5F5F5;
+}
