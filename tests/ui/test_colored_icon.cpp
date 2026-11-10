@@ -1,7 +1,9 @@
+#include "ui/icon_resources.hpp"
 #include "ui/utils/colored_icon.hpp"
-#include <QtCore/qhashfunctions.h>
+#include <QtCore/qsize.h>
 #include <QtXml/qdom.h>
 #include <gtest/gtest.h>
+#include <list>
 #include <vector>
 
 namespace UI {
@@ -56,6 +58,29 @@ protected:
     }
   }
 };
+
+TEST_F(ColoredIconTest, CheckSizeValidation) {
+  struct CaseUnit {
+    QSize value;
+    bool wantFall;
+  };
+  std::list<CaseUnit> tCases = {
+      {QSize(45, 0), true},
+      {QSize(0, 45), true},
+      {QSize(0, 0), true},
+      {QSize(45, 45), false},
+  };
+
+  for (auto &unit : tCases) {
+    if (unit.wantFall) {
+      ASSERT_ANY_THROW(UI::ColoredIcon::CreateIcon(UI::Icons::DefaultIcon,
+                                                   "#FFFFFF", unit.value));
+    } else {
+      ASSERT_NO_THROW(UI::ColoredIcon::CreateIcon(UI::Icons::DefaultIcon,
+                                                  "#FFFFFF", unit.value));
+    }
+  }
+}
 
 TEST_F(ColoredIconTest, TestXmlTagColor) {
   const std::string TEST_COLOR = "#FFFFFF";

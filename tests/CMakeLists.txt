@@ -9,6 +9,8 @@ FetchContent_MakeAvailable(googletest)
 set(BASE_LIBS
   #  GTest::gtest_main
   GTest::gtest
+  Qt::Test
+  Qt::Core
   ${PROJECT_NAME}_lib
 )
 
@@ -19,6 +21,7 @@ set(TEST_SUIT_MAIN_PATH
 set(UI_TEST_SUITS
   colored_icon
   icon_button
+  resources
 )
 
 include(GoogleTest)
